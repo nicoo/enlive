@@ -22,11 +22,11 @@
 (defn document? [x] (= :document (:type x)))
 (defn comment? [x] (= :comment (:type x)))
 
-(defn xml-zip 
+(defn xml-zip
  "Returns a zipper for xml elements (as from xml/parse),
  given a root element"
  [root]
-   (z/zipper #(or (tag? %) (document? %)) 
+   (z/zipper #(or (tag? %) (document? %))
      (comp seq :content) #(assoc %1 :content %2) root))
 
 (defn- insert-element [loc e]
@@ -37,17 +37,17 @@
     (when-let [l (-> loc z/down z/rightmost)]
       (when (-> l z/node string?)
         (-> l (z/edit str s) z/up)))
-    (-> loc (z/append-child s)))) 
+    (-> loc (z/append-child s))))
 
 (defn- handler [loc metadata]
   (proxy [DefaultHandler2] []
     (startElement [uri local-name q-name ^Attributes atts]
-      (let [e (struct element 
+      (let [e (struct element
                 (keyword q-name)
                 (when (pos? (. atts (getLength)))
-                  (reduce #(assoc %1 (keyword (.getQName atts %2)) (.getValue atts (int %2))) 
+                  (reduce #(assoc %1 (keyword (.getQName atts %2)) (.getValue atts (int %2)))
                     {} (range (.getLength atts)))))]
-        (swap! loc insert-element e))) 
+        (swap! loc insert-element e)))
     (endElement [uri local-name q-name]
       (swap! loc z/up))
     (characters [ch start length]
@@ -63,7 +63,7 @@
         (doto (org.xml.sax.InputSource.)
           (.setSystemId systemId)
           (.setPublicId publicId)
-          (.setCharacterStream (java.io.StringReader. "")))) 
+          (.setCharacterStream (java.io.StringReader. ""))))
       ([publicId systemId]
         (let [^DefaultHandler2 this this]
           (proxy-super resolveEntity publicId systemId))))))
@@ -73,7 +73,7 @@
    (doto
      (.setValidating false)
      (.setFeature "http://xml.org/sax/features/external-general-entities" false)
-     (.setFeature "http://xml.org/sax/features/external-parameter-entities" false)) 
+     (.setFeature "http://xml.org/sax/features/external-parameter-entities" false))
    .newSAXParser
    (doto
      (.setProperty "http://xml.org/sax/properties/lexical-handler" ch))
@@ -94,4 +94,4 @@
       (startparse s content-handler)
       (map #(if (instance? clojure.lang.IObj %) (vary-meta % merge @metadata) %)
         (-> @loc z/root :content)))))
-         
+
