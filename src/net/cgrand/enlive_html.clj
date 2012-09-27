@@ -46,6 +46,12 @@
     (.setProperty "http://xml.org/sax/properties/lexical-handler" ch)
     (.parse s)))
 
+(defn- startparse-nekohtml
+  [s ch]
+  (doto (org.cyberneko.html.parsers.SAXParser.)
+    (.setContentHandler ch)
+    (.parse s)))
+
 (defn- jattrs->saxattrs
   "returns a sax Attributes object from a jericho Attributes object"
   [^net.htmlparser.jericho.Attributes jattrs]
@@ -101,7 +107,8 @@
      ~@body))
 
 (def parsers {:jericho startparse-jericho
-              :tagsoup startparse-tagsoup})
+              :tagsoup startparse-tagsoup
+              :nekohtml startparse-nekohtml})
 
 (defmacro with-parser
   [parser & body]
