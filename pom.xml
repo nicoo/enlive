@@ -11,7 +11,7 @@
   <scm>
     <connection>scm:git:git://github.com/nicoo/enlive.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/nicoo/enlive.git</developerConnection>
-    <tag>8e837101e04e03103c8e8fbd47446ef6bafa665f</tag>
+    <tag>31dd5e45996ad4162d53035f6310eb786b22bae8</tag>
     <url>https://github.com/nicoo/enlive</url>
   </scm>
   <build>
@@ -53,6 +53,11 @@
       <groupId>net.htmlparser.jericho</groupId>
       <artifactId>jericho-html</artifactId>
       <version>3.2</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.nekohtml</groupId>
+      <artifactId>nekohtml</artifactId>
+      <version>1.9.16</version>
     </dependency>
   </dependencies>
 </project>

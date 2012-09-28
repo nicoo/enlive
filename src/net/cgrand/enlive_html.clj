@@ -46,11 +46,26 @@
     (.setProperty "http://xml.org/sax/properties/lexical-handler" ch)
     (.parse s)))
 
+(defn- mk-timeout-nekohtml-parser
+  [timeout]
+  (let [end (+ (System/currentTimeMillis) timeout)]
+    (proxy [org.cyberneko.html.parsers.SAXParser] []
+      (startElement [^org.apache.xerces.xni.QName element
+                     ^org.apache.xerces.xni.XMLAttributes attributes
+                     ^org.apache.xerces.xni.Augmentations augs]
+        (if (> (System/currentTimeMillis) end)
+          (throw (java.util.concurrent.TimeoutException. "cannot parse resource before timeout."))
+          (proxy-super startElement element attributes augs))))))
+
 (defn- startparse-nekohtml
-  [s ch]
-  (doto (org.cyberneko.html.parsers.SAXParser.)
-    (.setContentHandler ch)
-    (.parse s)))
+  ([s ch]
+     (doto (org.cyberneko.html.parsers.SAXParser.)
+       (.setContentHandler ch)
+       (.parse s)))
+  ([timeout s ch]
+     (doto (mk-timeout-nekohtml-parser timeout)
+       (.setContentHandler ch)
+       (.parse s))))
 
 (defn- jattrs->saxattrs
   "returns a sax Attributes object from a jericho Attributes object"
@@ -114,6 +129,12 @@
   [parser & body]
   `(let [parse-fn# (get parsers ~parser)]
      (with-parse-fn parse-fn#
+       ~@body)))
+
+(defmacro with-parser-timeout
+  [parser timeout & body]
+  `(let [parse-fn# (get parsers ~parser)]
+     (with-parse-fn (partial parse-fn# ~timeout)
        ~@body)))
 
 (defn- load-html-resource
