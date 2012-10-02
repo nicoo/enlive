@@ -49,14 +49,16 @@
 
 (defn- mk-timeout-nekohtml-parser
   [timeout]
-  (let [end (+ (System/currentTimeMillis) timeout)]
-    (proxy [org.cyberneko.html.parsers.SAXParser] []
-      (startElement [^org.apache.xerces.xni.QName element
-                     ^org.apache.xerces.xni.XMLAttributes attributes
-                     ^org.apache.xerces.xni.Augmentations augs]
-        (if (> (System/currentTimeMillis) end)
-          (throw (java.util.concurrent.TimeoutException. "cannot parse resource before timeout."))
-          (proxy-super startElement element attributes augs))))))
+  (let [end (+ (System/currentTimeMillis) timeout)
+        parser (proxy [org.cyberneko.html.parsers.SAXParser] []
+                 (startElement [^org.apache.xerces.xni.QName element
+                                ^org.apache.xerces.xni.XMLAttributes attributes
+                                ^org.apache.xerces.xni.Augmentations augs]
+                   (if (> (System/currentTimeMillis) end)
+                     (throw (java.util.concurrent.TimeoutException. "cannot parse resource before timeout."))
+                     (proxy-super startElement element attributes augs))))]
+    (.setProperty parser "http://cyberneko.org/html/properties/names/elems" "lower")
+    parser))
 
 (defn- startparse-nekohtml
   ([s ch]
