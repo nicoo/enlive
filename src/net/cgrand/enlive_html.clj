@@ -11,7 +11,8 @@
 (ns net.cgrand.enlive-html
   "enlive-html is a selector-based transformation and extraction engine."
   (:require [net.cgrand.xml :as xml])
-  (:require [clojure.zip :as z]))
+  (:require [clojure.zip :as z]
+            [clojure.string :as str]))
 
 ;; EXAMPLES: see net.cgrand.enlive-html.examples
 
@@ -60,6 +61,7 @@
 (defn- startparse-nekohtml
   ([s ch]
      (doto (org.cyberneko.html.parsers.SAXParser.)
+       (.setProperty "http://cyberneko.org/html/properties/names/elems" "lower")
        (.setContentHandler ch)
        (.parse s)))
   ([timeout s ch]
@@ -92,7 +94,7 @@
          ;; Tag open/end
         net.htmlparser.jericho.Tag
         (let [type (.getTagType el)
-              tag-name (.getName ^net.htmlparser.jericho.Tag el)]
+              tag-name (str/lower-case (.getName ^net.htmlparser.jericho.Tag el))]
           ;; only normal tag are supported atm
           (when (or
                  (= net.htmlparser.jericho.StartTagType/NORMAL type)

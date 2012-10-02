@@ -11,7 +11,7 @@
   <scm>
     <connection>scm:git:git://github.com/nicoo/enlive.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/nicoo/enlive.git</developerConnection>
-    <tag>31dd5e45996ad4162d53035f6310eb786b22bae8</tag>
+    <tag>163dd6936b9c059711df3436438b6ec48e92a8e1</tag>
     <url>https://github.com/nicoo/enlive</url>
   </scm>
   <build>
