@@ -7,7 +7,8 @@
 ;   You must not remove this notice, or any other, from this software.
 
 (ns net.cgrand.xml
-  (:require [clojure.zip :as z])
+  (:require [clojure.zip :as z]
+            [clojure.string :as str])
   (:import (org.xml.sax ContentHandler Attributes SAXException XMLReader)
            (org.xml.sax.ext DefaultHandler2)
            (javax.xml.parsers SAXParser SAXParserFactory)))
@@ -39,13 +40,19 @@
         (-> l (z/edit str s) z/up)))
     (-> loc (z/append-child s))))
 
+(defn- clean-keyword
+  "prevent clojure reader to miserably fail on keyword like :ee: "
+  [s]
+  (-> (str/replace s #":" "")
+      (keyword)))
+
 (defn- handler [loc metadata]
   (proxy [DefaultHandler2] []
     (startElement [uri local-name q-name ^Attributes atts]
       (let [e (struct element
-                (keyword q-name)
+                (clean-keyword q-name)
                 (when (pos? (. atts (getLength)))
-                  (reduce #(assoc %1 (keyword (.getQName atts %2)) (.getValue atts (int %2)))
+                  (reduce #(assoc %1 (clean-keyword (.getQName atts %2)) (.getValue atts (int %2)))
                     {} (range (.getLength atts)))))]
         (swap! loc insert-element e)))
     (endElement [uri local-name q-name]

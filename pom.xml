@@ -4,14 +4,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>enlive</groupId>
   <artifactId>enlive</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3-SNAPSHOT</version>
   <name>enlive</name>
   <description>a HTML selector-based (à la CSS) templating and transformation system for Clojure</description>
   <url>http://github.com/cgrand/enlive/</url>
   <scm>
     <connection>scm:git:git://github.com/nicoo/enlive.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/nicoo/enlive.git</developerConnection>
-    <tag>163dd6936b9c059711df3436438b6ec48e92a8e1</tag>
+    <tag>4a3bd3ca0591591bde68582fa27d7c19e306a2ba</tag>
     <url>https://github.com/nicoo/enlive</url>
   </scm>
   <build>
