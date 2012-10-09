@@ -41,10 +41,12 @@
     (-> loc (z/append-child s))))
 
 (defn- clean-keyword
-  "prevent clojure reader to miserably fail on keyword like :ee: "
+  "prevent clojure reader to miserably fail on keyword like :ee: or :"
   [s]
-  (-> (str/replace s #":" "")
-      (keyword)))
+  (let [n (str/replace s #":" "")]
+    (if (str/blank? n)
+      :invalid-token
+      (keyword n))))
 
 (defn- handler [loc metadata]
   (proxy [DefaultHandler2] []
